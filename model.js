@@ -1,51 +1,40 @@
-
 // Implémenter ici les 4 classes du modèle.
 // N'oubliez pas l'héritage !
 
-var editingMode = {rect: 0, line: 1};
+function Drawing() {
+    this.shapes = [];
 
-function Pencil(ctx, drawing, canvas) {
-    this.currEditingMode = editingMode.line;
-    this.currLineWidth = 5;
-    this.currColour = '#000000';
-    this.currentShape = 0;
-    this.dnd = new DnD(canvas, this);
+    this.addShape = function (shape) {
+        this.shapes.push(shape);
+    }.bind(this);
+
+    this.removeShape = function (index) {
+        var shape = this.shapes[index];
+        this.shapes.splice(index, 1);
+        this.oldshapes.push(shape);
+        console.log(this.shapes);
+        console.log(this.oldshapes);
+    }.bind(this);
+
+function Shape(thickness, color) {
+    this.thickness = thickness;
+    this.color = color;
+}
+
+function Rectangle(x1, y1, height, width, thickness, color) {
+    Shape.call(this, thickness, color);
+    this.x1 = x1;
+    this.y1 = y1;
+    this.height = height;
+    this.width = width;
+}
+Rectangle.prototype = new Shape();
     
-  //début souris
-    this.onInteractionStart = function () {
-        this.setDrawingAttr();
-        if(this.currEditingMode == editingMode.rect)
-        {
-            this.currentShape = new Rectangle(this.dnd.initX, this.dnd.initY, 0, 0, this.currLineWidth, this.currColour);
-        }
-        else if(this.currEditingMode == editingMode.line)
-        {
-            this.currentShape = new Line(this.dnd.initX, this.dnd.initY, this.dnd.initX, this.dnd.initY, this.currLineWidth, this.currColour);
-        }
-    }.bind(this);
-
-  //Relachement de la souris
-    this.onInteractionEnd = function () {
-        this.createShape();
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawing.addShape(this.currentShape);
-        drawing.paint(ctx, canvas);
-        this.currentShape = 0;
-        drawing.updateShapeList();
-    }.bind(this);
-
-    this.createShape = function () {
-        if(this.currEditingMode == editingMode.rect)
-        {
-                var height = this.dnd.finalY - this.dnd.initY;
-                var width = this.dnd.finalX - this.dnd.initX;
-                this.currentShape = new Rectangle(this.dnd.initX, this.dnd.initY, height, width, this.currLineWidth, this.currColour);
-        }
-        else if(this.currEditingMode == editingMode.line)
-        {
-                this.currentShape = new Line(this.dnd.initX, this.dnd.initY, this.dnd.finalX, this.dnd.finalY, this.currLineWidth, this.currColour);
-        }
-    }
-};
-
-
+function Line(x1, y1, x2, y2, thickness, color) {
+    Shape.call(this, thickness, color);
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+}
+Line.prototype = new Shape();
